@@ -1,4 +1,9 @@
-// --- Default Assets Map ---
+// --- Utility: strip 4-byte supplementary-plane chars (emoji) that corrupt on email platforms ---
+        function stripNonBMP(str) {
+            return str.replace(/[\u{10000}-\u{10FFFF}]/gu, '');
+        }
+
+        // --- Default Assets Map ---
         const defaultAssets = {}; // images served as files via HTTP
 
         // --- Block Components Library ---
@@ -229,7 +234,7 @@
                 const subject = document.getElementById('meta-subject').value || '未命名草稿';
                 const key = 'edm_draft_' + new Date().getTime();
                 const data = {
-                    html: clone.innerHTML,
+                    html: stripNonBMP(clone.innerHTML),
                     subject: subject,
                     dateStr: new Date().toLocaleString()
                 };
@@ -267,6 +272,9 @@
                 plugins: 'link lists paste image',
                 toolbar: 'undo redo | bold italic | forecolor backcolor | alignleft aligncenter | link image',
                 paste_data_images: true,
+                paste_preprocess: function(plugin, args) {
+                    args.content = stripNonBMP(args.content);
+                },
                 valid_elements: '+*[*]',
                 setup: function(editor) {
                     editor.on('click', function(e) { if (e.target.tagName === 'A') e.preventDefault(); });
@@ -485,10 +493,6 @@
         });
 
         // --- Export ZIP ---
-        function stripNonBMP(str) {
-            return str.replace(/[\u{10000}-\u{10FFFF}]/gu, '');
-        }
-
         document.getElementById('btn-export').addEventListener('click', async () => {
             if (canvas.querySelector('.empty-state')) { alert('請先建立內容！'); return; }
 
