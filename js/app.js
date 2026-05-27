@@ -270,7 +270,8 @@
                 inline: true,
                 menubar: false,
                 plugins: 'link lists paste image',
-                toolbar: 'undo redo | bold italic | forecolor backcolor | alignleft aligncenter | link image',
+                toolbar: 'undo redo | bold italic | forecolor backcolor | fontsizeselect | alignleft aligncenter | link image',
+                fontsize_formats: '12px 13px 14px 16px 18px 20px 24px 28px 32px 36px',
                 paste_data_images: true,
                 paste_preprocess: function(plugin, args) {
                     let c = args.content;
