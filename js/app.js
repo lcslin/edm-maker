@@ -406,14 +406,24 @@
             floatBar.style.display = 'none';
         }
 
-        document.getElementById('btn-replace-img').addEventListener('click', () => hiddenImageUpload.click());
+        document.getElementById('btn-replace-img').addEventListener('click', () => {
+            const targetImg = selectedImageElement;
+            const once = function(e) {
+                hiddenImageUpload.removeEventListener('change', once);
+                processImageFile(e.target.files[0], targetImg);
+                hiddenImageUpload.value = '';
+            };
+            hiddenImageUpload.addEventListener('change', once);
+            hiddenImageUpload.click();
+        });
 
         document.getElementById('btn-paste-img').addEventListener('click', () => {
+            const targetImg = selectedImageElement;
             navigator.clipboard.read().then(items => {
                 for (const item of items) {
                     const imgType = item.types.find(t => t.startsWith('image/'));
                     if (imgType) {
-                        item.getType(imgType).then(blob => processImageFile(blob));
+                        item.getType(imgType).then(blob => processImageFile(blob, targetImg));
                         return;
                     }
                 }
@@ -438,31 +448,27 @@
             clearImageSelection();
         });
 
-        hiddenImageUpload.addEventListener('change', function(e) {
-            processImageFile(e.target.files[0]);
-            this.value = '';
-        });
-
         document.addEventListener('paste', function(e) {
             if (!selectedImageElement) return;
+            const targetImg = selectedImageElement;
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             for (let index in items) {
                 const item = items[index];
                 if (item.kind === 'file' && item.type.startsWith('image/')) {
                     e.preventDefault();
-                    processImageFile(item.getAsFile());
+                    processImageFile(item.getAsFile(), targetImg);
                     return;
                 }
             }
         });
 
-        function processImageFile(file) {
+        function processImageFile(file, targetEl) {
             if (!file) return;
             if (!file.type.match('image.*')) { alert('請選擇圖片檔案'); return; }
             const reader = new FileReader();
             reader.onload = function(event) {
-                if (selectedImageElement) {
-                    const imgEl = selectedImageElement;
+                const imgEl = targetEl || selectedImageElement;
+                if (imgEl) {
                     imgEl.src = event.target.result;
                     imgEl.style.filter = 'brightness(1.3)';
                     clearImageSelection();
