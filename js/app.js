@@ -273,7 +273,21 @@
                 toolbar: 'undo redo | bold italic | forecolor backcolor | alignleft aligncenter | link image',
                 paste_data_images: true,
                 paste_preprocess: function(plugin, args) {
-                    args.content = stripNonBMP(args.content);
+                    let c = args.content;
+                    // Strip Word conditional comments
+                    c = c.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi, '');
+                    // Strip Office/Word namespace tags (<o:p>, <w:...>, etc.)
+                    c = c.replace(/<\/?[a-z]+:[^>]*>/gi, '');
+                    // Strip <script>, <style>, <meta>, <link> blocks
+                    c = c.replace(/<(script|style|meta|link)[\s\S]*?<\/\1>/gi, '');
+                    c = c.replace(/<(script|style|meta|link)[^>]*\/?>/gi, '');
+                    // Strip mso-* and Office inline style properties
+                    c = c.replace(/\s*mso-[^:;)"']+:[^;)"']+;?/gi, '');
+                    // Strip class attributes (reference external stylesheets that won't exist in email)
+                    c = c.replace(/\s+class="[^"]*"/gi, '');
+                    // Strip non-BMP emoji
+                    c = stripNonBMP(c);
+                    args.content = c;
                 },
                 valid_elements: '+*[*]',
                 setup: function(editor) {
