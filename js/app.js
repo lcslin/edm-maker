@@ -171,6 +171,30 @@
         let activeBlock = null;
         const btnStyleBar = document.getElementById('btn-style-bar');
 
+        // Color palette for button swatches
+        const BTN_COLORS = [
+            '#111111', '#555555', '#aaaaaa', '#ffffff',
+            '#c0392b', '#e74c3c', '#e67e22', '#f1c40f',
+            '#27ae60', '#2980b9', '#1a3a5c', '#8e44ad'
+        ];
+
+        // Build color swatches
+        document.querySelectorAll('.cs-swatches').forEach(container => {
+            BTN_COLORS.forEach(color => {
+                const s = document.createElement('span');
+                s.className = 'cs-swatch';
+                s.dataset.color = color;
+                s.style.backgroundColor = color;
+                if (color === '#ffffff') s.style.borderColor = '#bbb';
+                s.addEventListener('click', () => {
+                    applyBtnColor(container.dataset.prop, color);
+                    container.querySelectorAll('.cs-swatch').forEach(x => x.classList.remove('selected'));
+                    s.classList.add('selected');
+                });
+                container.appendChild(s);
+            });
+        });
+
         // --- Initialization & LocalForage ---
         document.addEventListener('DOMContentLoaded', loadSavedList);
 
@@ -381,17 +405,9 @@
 
             const btnTd = activeBlock.querySelector('[data-btn-td]');
             if (btnTd) {
-                const btnA = btnTd.querySelector('a');
-                const curBg = btnA ? (btnA.style.backgroundColor || '#111111') : '#111111';
-                const curText = btnA ? (btnA.style.color || '#ffffff') : '#ffffff';
-                const borderMatch = btnTd.style.border.match(/#[0-9a-fA-F]{3,6}/);
-                const curBorder = borderMatch ? borderMatch[0] : curBg;
-                document.getElementById('btn-bg-color').value = rgbToHex(curBg);
-                document.getElementById('btn-text-color').value = rgbToHex(curText);
-                document.getElementById('btn-border-color').value = rgbToHex(curBorder);
+                highlightCurrentColors();
                 btnStyleBar.style.display = 'flex';
-                btnStyleBar.style.top = (topOffset + rect.height + 4) + 'px';
-                btnStyleBar.style.left = (rect.left - wrapperRect.left) + 'px';
+                btnStyleBar.style.top = topOffset + 'px';
             }
         }
 
@@ -408,22 +424,37 @@
             return '#' + m.slice(0,3).map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
         }
 
-        function applyBtnColors() {
+        function applyBtnColor(prop, color) {
             if (!activeBlock) return;
             const btnTd = activeBlock.querySelector('[data-btn-td]');
             if (!btnTd) return;
-            const bg = document.getElementById('btn-bg-color').value;
-            const text = document.getElementById('btn-text-color').value;
-            const border = document.getElementById('btn-border-color').value;
-            btnTd.style.backgroundColor = bg;
-            btnTd.style.border = `2px solid ${border}`;
             const btnA = btnTd.querySelector('a');
-            if (btnA) { btnA.style.backgroundColor = bg; btnA.style.color = text; }
+            if (prop === 'bg') {
+                btnTd.style.backgroundColor = color;
+                if (btnA) btnA.style.backgroundColor = color;
+            } else if (prop === 'text') {
+                if (btnA) btnA.style.color = color;
+            } else if (prop === 'border') {
+                btnTd.style.border = `2px solid ${color}`;
+            }
         }
 
-        document.getElementById('btn-bg-color').addEventListener('input', applyBtnColors);
-        document.getElementById('btn-text-color').addEventListener('input', applyBtnColors);
-        document.getElementById('btn-border-color').addEventListener('input', applyBtnColors);
+        function highlightCurrentColors() {
+            if (!activeBlock) return;
+            const btnTd = activeBlock.querySelector('[data-btn-td]');
+            if (!btnTd) return;
+            const btnA = btnTd.querySelector('a');
+            const curBg = rgbToHex(btnA ? (btnA.style.backgroundColor || '#111111') : '#111111').toLowerCase();
+            const curText = rgbToHex(btnA ? (btnA.style.color || '#ffffff') : '#ffffff').toLowerCase();
+            const borderMatch = btnTd.style.border.match(/#[0-9a-fA-F]{3,6}/);
+            const curBorder = (borderMatch ? borderMatch[0] : curBg).toLowerCase();
+            ['bg', 'text', 'border'].forEach((prop, i) => {
+                const cur = [curBg, curText, curBorder][i];
+                document.querySelectorAll(`.cs-swatches[data-prop="${prop}"] .cs-swatch`).forEach(s => {
+                    s.classList.toggle('selected', s.dataset.color.toLowerCase() === cur);
+                });
+            });
+        }
 
         document.getElementById('btn-move-up').addEventListener('click', () => {
             if (activeBlock && activeBlock.previousElementSibling) {
@@ -452,6 +483,7 @@
         // --- Image Replacement ---
         function handleImageClick(e) {
             e.stopPropagation();
+            clearBlockSelection();
             clearImageSelection();
             selectedImageElement = e.target;
             selectedImageElement.classList.add('img-selected');
@@ -459,9 +491,9 @@
             const imgRect = selectedImageElement.getBoundingClientRect();
             const wrapperRect = wrapper.getBoundingClientRect();
 
+            floatBar.style.left = '';
             floatBar.style.display = 'flex';
-            floatBar.style.left = (imgRect.left - wrapperRect.left + imgRect.width / 2) + 'px';
-            floatBar.style.top = (imgRect.top - wrapperRect.top + wrapper.scrollTop + imgRect.height / 2) + 'px';
+            floatBar.style.top = (imgRect.top - wrapperRect.top + wrapper.scrollTop) + 'px';
         }
 
         function clearImageSelection() {
@@ -545,7 +577,7 @@
         // Global click clears
         document.addEventListener('click', (e) => {
             if(!e.target.closest('.editable-img') && !floatBar.contains(e.target)) clearImageSelection();
-            if(!e.target.closest('.edm-block') && !blockFloatBar.contains(e.target) && !e.target.closest('#add-block-container')) clearBlockSelection();
+            if(!e.target.closest('.edm-block') && !blockFloatBar.contains(e.target) && !btnStyleBar.contains(e.target) && !e.target.closest('#add-block-container')) clearBlockSelection();
         });
 
         // --- Export ZIP ---

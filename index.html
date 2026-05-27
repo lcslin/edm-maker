@@ -90,17 +90,26 @@
 
             <!-- Button Style Controls -->
             <div id="btn-style-bar">
-                <label>底色<input type="color" id="btn-bg-color" value="#111111"></label>
-                <label>文字<input type="color" id="btn-text-color" value="#ffffff"></label>
-                <label>框線<input type="color" id="btn-border-color" value="#111111"></label>
+                <div class="cs-group">
+                    <div class="cs-label">底色</div>
+                    <div class="cs-swatches" data-prop="bg"></div>
+                </div>
+                <div class="cs-group">
+                    <div class="cs-label">文字</div>
+                    <div class="cs-swatches" data-prop="text"></div>
+                </div>
+                <div class="cs-group">
+                    <div class="cs-label">框線</div>
+                    <div class="cs-swatches" data-prop="border"></div>
+                </div>
             </div>
 
             <!-- Image Replacement Float -->
             <div id="img-float-bar">
-                <button id="btn-replace-img">更換圖片</button>
+                <button id="btn-replace-img">換圖</button>
                 <button id="btn-paste-img">貼上</button>
-                <button id="btn-img-vertical">改為垂直</button>
-                <button id="btn-img-center">水平置中</button>
+                <button id="btn-img-vertical">垂直</button>
+                <button id="btn-img-center">置中</button>
             </div>
             <input type="file" id="hidden-image-upload" style="display:none;" accept=".png, .jpg, .jpeg, .gif">
         </div>

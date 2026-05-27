@@ -116,36 +116,40 @@
         /* Image Floating Bar */
         #img-float-bar {
             display: none; position: absolute; z-index: 100;
-            background: var(--primary); padding: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-            transform: translate(-50%, -50%); white-space: nowrap;
-            flex-direction: row;
+            right: -46px; width: 40px;
+            background: var(--primary); box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            flex-direction: column; white-space: nowrap;
         }
-        #img-float-bar button { border: none; border-right: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 14px; font-size: 12px; width: auto; font-family: var(--font-ui); text-transform: none; letter-spacing: 0;}
-        #img-float-bar button:last-child { border-right: none; }
+        #img-float-bar button { border: none; border-bottom: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 9px 0; font-size: 11px; width: 100%; font-family: var(--font-ui); text-transform: none; letter-spacing: 0;}
+        #img-float-bar button:last-child { border-bottom: none; }
         #img-float-bar button:hover { background: #444; }
-        
+
         /* Block Controls (Right side of active block) */
         .edm-block { position: relative; transition: outline 0.2s; }
         .edm-block.active-block { outline: 1px solid var(--primary); outline-offset: -1px; z-index: 50;}
-        
+
         #block-float-bar {
             display: none; position: absolute; z-index: 90;
-            right: -40px; top: 0; width: 35px; background: #fff; border: 1px solid var(--primary);
+            right: -46px; top: 0; width: 40px; background: #fff; border: 1px solid var(--primary);
             flex-direction: column;
         }
         #block-float-bar button { padding: 10px 0; font-size: 12px; border: none; border-bottom: 1px solid #eee; width: 100%;}
         #block-float-bar button:last-child { border-bottom: none; }
         #block-float-bar button:hover { background: var(--primary); color: #fff; }
 
-        /* Button Style Bar */
+        /* Button Style Bar — color swatches */
         #btn-style-bar {
             display: none; position: absolute; z-index: 95;
+            right: -155px; width: 105px;
             background: #fff; border: 1px solid var(--primary);
-            flex-direction: row; align-items: center; gap: 12px;
-            padding: 6px 12px; white-space: nowrap;
+            flex-direction: column; padding: 8px; gap: 8px;
         }
-        #btn-style-bar label { font-size: 11px; color: #555; display: flex; align-items: center; gap: 4px; cursor: pointer; }
-        #btn-style-bar input[type=color] { width: 28px; height: 22px; border: 1px solid #ccc; padding: 1px; cursor: pointer; border-radius: 3px; }
+        .cs-group { display: flex; flex-direction: column; gap: 4px; }
+        .cs-label { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; font-family: var(--font-ui); }
+        .cs-swatches { display: flex; flex-wrap: wrap; gap: 3px; }
+        .cs-swatch { width: 20px; height: 20px; cursor: pointer; border: 1.5px solid rgba(0,0,0,0.12); box-sizing: border-box; transition: transform 0.1s; }
+        .cs-swatch:hover { transform: scale(1.2); border-color: #555; }
+        .cs-swatch.selected { outline: 2px solid var(--primary); outline-offset: 1px; }
 
         /* Add Block System */
         #add-block-container { text-align: center; padding: 20px; background: #fbfbfb; border-top: 1px dashed #ccc; }
