@@ -76,7 +76,7 @@
                 <table class="edm-block" width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#F8F8F8">
                     <tr>
                         <td align="center" style="padding: 20px 0;">
-                            <img class="editable-img" src="https://assets.echobox.com/urn:property:14544/be994c90-85c9-41cc-95b0-5f15b778ea74.jpg" alt="VERSE Logo" width="600" style="display: block; border: 0; width: 100%; max-width: 600px; height: auto;">
+                            <img class="editable-img" src="verse-header.jpg" alt="VERSE Logo" width="600" style="display: block; border: 0; width: 100%; max-width: 600px; height: auto;">
                         </td>
                     </tr>
                     <tr>
