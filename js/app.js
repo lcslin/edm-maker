@@ -287,6 +287,26 @@
             });
 
             setupEventListeners();
+            preloadImages();
+        }
+
+        async function preloadImages() {
+            const imgs = canvas.querySelectorAll('.editable-img');
+            for (const img of imgs) {
+                const src = img.getAttribute('src');
+                if (!src || src.startsWith('data:')) continue;
+                try {
+                    const res = await fetch(src);
+                    if (!res.ok) continue;
+                    const blob = await res.blob();
+                    const dataUrl = await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve(e.target.result);
+                        reader.readAsDataURL(blob);
+                    });
+                    img.src = dataUrl;
+                } catch (_) {}
+            }
         }
 
         function setupEventListeners() {
