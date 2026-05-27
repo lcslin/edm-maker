@@ -1,2 +1,4 @@
-*.sh
-*.env
+.DS_Store
+.antigravitycli/
+*.py
+*.docx
