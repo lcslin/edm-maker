@@ -43,8 +43,8 @@
                         <td align="center" style="padding: 20px 40px 40px 40px;">
                             <table border="0" cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td align="center" style="border: 1px solid #111111;">
-                                        <a href="#" class="editable-text" target="_blank" style="font-size: 13px; font-weight: bold; color: #111111; background-color: transparent; text-decoration: none; padding: 15px 30px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">行動呼籲</a>
+                                    <td data-btn-td align="center" style="background-color: #111111; border: 2px solid #111111;">
+                                        <a href="#" class="editable-text" target="_blank" style="font-size: 14px; font-weight: bold; color: #ffffff; background-color: #111111; text-decoration: none; padding: 14px 32px; display: inline-block; letter-spacing: 1px;">行動呼籲</a>
                                     </td>
                                 </tr>
                             </table>
@@ -169,6 +169,7 @@
         
         let selectedImageElement = null;
         let activeBlock = null;
+        const btnStyleBar = document.getElementById('btn-style-bar');
 
         // --- Initialization & LocalForage ---
         document.addEventListener('DOMContentLoaded', loadSavedList);
@@ -370,19 +371,59 @@
             clearBlockSelection();
             activeBlock = e.currentTarget;
             activeBlock.classList.add('active-block');
-            
+
             const rect = activeBlock.getBoundingClientRect();
             const wrapperRect = wrapper.getBoundingClientRect();
-            
+            const topOffset = rect.top - wrapperRect.top + wrapper.scrollTop;
+
             blockFloatBar.style.display = 'flex';
-            blockFloatBar.style.top = (rect.top - wrapperRect.top + wrapper.scrollTop) + 'px';
+            blockFloatBar.style.top = topOffset + 'px';
+
+            const btnTd = activeBlock.querySelector('[data-btn-td]');
+            if (btnTd) {
+                const btnA = btnTd.querySelector('a');
+                const curBg = btnA ? (btnA.style.backgroundColor || '#111111') : '#111111';
+                const curText = btnA ? (btnA.style.color || '#ffffff') : '#ffffff';
+                const borderMatch = btnTd.style.border.match(/#[0-9a-fA-F]{3,6}/);
+                const curBorder = borderMatch ? borderMatch[0] : curBg;
+                document.getElementById('btn-bg-color').value = rgbToHex(curBg);
+                document.getElementById('btn-text-color').value = rgbToHex(curText);
+                document.getElementById('btn-border-color').value = rgbToHex(curBorder);
+                btnStyleBar.style.display = 'flex';
+                btnStyleBar.style.top = (topOffset + rect.height + 4) + 'px';
+                btnStyleBar.style.left = (rect.left - wrapperRect.left) + 'px';
+            }
         }
 
         function clearBlockSelection() {
             if (activeBlock) activeBlock.classList.remove('active-block');
             activeBlock = null;
             blockFloatBar.style.display = 'none';
+            btnStyleBar.style.display = 'none';
         }
+
+        function rgbToHex(val) {
+            const m = val.match(/\d+/g);
+            if (!m || val.startsWith('#')) return val.length === 7 ? val : '#111111';
+            return '#' + m.slice(0,3).map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
+        }
+
+        function applyBtnColors() {
+            if (!activeBlock) return;
+            const btnTd = activeBlock.querySelector('[data-btn-td]');
+            if (!btnTd) return;
+            const bg = document.getElementById('btn-bg-color').value;
+            const text = document.getElementById('btn-text-color').value;
+            const border = document.getElementById('btn-border-color').value;
+            btnTd.style.backgroundColor = bg;
+            btnTd.style.border = `2px solid ${border}`;
+            const btnA = btnTd.querySelector('a');
+            if (btnA) { btnA.style.backgroundColor = bg; btnA.style.color = text; }
+        }
+
+        document.getElementById('btn-bg-color').addEventListener('input', applyBtnColors);
+        document.getElementById('btn-text-color').addEventListener('input', applyBtnColors);
+        document.getElementById('btn-border-color').addEventListener('input', applyBtnColors);
 
         document.getElementById('btn-move-up').addEventListener('click', () => {
             if (activeBlock && activeBlock.previousElementSibling) {
