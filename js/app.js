@@ -485,8 +485,8 @@
         });
 
         // --- Export ZIP ---
-        function escapeNonBMP(str) {
-            return str.replace(/[\u{10000}-\u{10FFFF}]/gu, c => `&#x${c.codePointAt(0).toString(16).toUpperCase()};`);
+        function escapeNonASCII(str) {
+            return str.replace(/[^\x00-\x7E]/gu, c => `&#x${c.codePointAt(0).toString(16).toUpperCase()};`);
         }
 
         document.getElementById('btn-export').addEventListener('click', async () => {
@@ -579,7 +579,7 @@
 </body>
 </html>`;
 
-            zip.file("edm.html", escapeNonBMP(finalHTML));
+            zip.file("edm.html", escapeNonASCII(finalHTML));
 
             try {
                 const content = await zip.generateAsync({type: "blob"});
