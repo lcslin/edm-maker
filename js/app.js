@@ -485,6 +485,10 @@
         });
 
         // --- Export ZIP ---
+        function escapeNonBMP(str) {
+            return str.replace(/[\u{10000}-\u{10FFFF}]/gu, c => `&#x${c.codePointAt(0).toString(16).toUpperCase()};`);
+        }
+
         document.getElementById('btn-export').addEventListener('click', async () => {
             if (canvas.querySelector('.empty-state')) { alert('請先建立內容！'); return; }
 
@@ -575,7 +579,7 @@
 </body>
 </html>`;
 
-            zip.file("edm.html", finalHTML);
+            zip.file("edm.html", escapeNonBMP(finalHTML));
 
             try {
                 const content = await zip.generateAsync({type: "blob"});
